@@ -1,12 +1,12 @@
-const VAULT_ADDR = process.env.VAULT_ADDR || "http://127.0.0.1:8200";
-const VAULT_TOKEN = process.env.VAULT_TOKEN;
+const BAO_ADDR = process.env.BAO_ADDR || "http://127.0.0.1:8200";
+const BAO_TOKEN = process.env.BAO_TOKEN;
 
-if (!VAULT_TOKEN) {
-  throw new Error("VAULT_TOKEN environment variable is required");
+if (!BAO_TOKEN) {
+  throw new Error("BAO_TOKEN environment variable is required");
 }
 
 const headers = {
-  "X-Vault-Token": VAULT_TOKEN,
+  "X-Vault-Token": BAO_TOKEN,
   "Content-Type": "application/json",
 };
 
@@ -15,7 +15,7 @@ const headers = {
  * Returns the raw 32-byte public key as a Buffer.
  */
 export async function getPublicKey(keyName: string): Promise<Buffer> {
-  const res = await fetch(`${VAULT_ADDR}/v1/transit/keys/${keyName}`, {
+  const res = await fetch(`${BAO_ADDR}/v1/transit/keys/${keyName}`, {
     headers,
   });
   if (!res.ok) {
@@ -41,7 +41,7 @@ export async function signData(
 ): Promise<Buffer> {
   const input = data.toString("base64");
 
-  const res = await fetch(`${VAULT_ADDR}/v1/transit/sign/${keyName}`, {
+  const res = await fetch(`${BAO_ADDR}/v1/transit/sign/${keyName}`, {
     method: "POST",
     headers,
     body: JSON.stringify({ input }),

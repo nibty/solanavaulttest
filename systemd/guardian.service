@@ -1,5 +1,5 @@
 # Reference template — not used in the Docker demo.
-# Shows how to inject the Vault token via systemd in production.
+# Shows how to inject the OpenBao token via systemd in production.
 
 [Unit]
 Description=Guardian Signing Service
@@ -14,11 +14,11 @@ WorkingDirectory=/opt/guardian
 
 # Token injected as env var — not in a .env file.
 # Option A: Direct environment variable (set by provisioning tooling)
-Environment="VAULT_ADDR=https://vault.internal:8200"
+Environment="BAO_ADDR=https://bao.internal:8200"
 
 # Option B: Credential from systemd LoadCredential (systemd 250+)
-# LoadCredential=vault-token:/run/secrets/guardian-vault-token
-# Environment="VAULT_TOKEN=%d/vault-token"
+# LoadCredential=bao-token:/run/secrets/guardian-bao-token
+# Environment="BAO_TOKEN=%d/bao-token"
 
 # Option C: EnvironmentFile owned by root, mode 0600
 EnvironmentFile=/etc/guardian/token.env
