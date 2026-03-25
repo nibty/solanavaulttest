@@ -14,13 +14,13 @@ const KEY_NAME = "guardian-1";
 program
   .requiredOption("--to <address>", "Recipient Solana address")
   .requiredOption("--amount <sol>", "Amount of SOL to transfer")
-  .option("--rpc <url>", "Solana RPC URL", clusterApiUrl("devnet"))
+  .option("-u, --url <url>", "Solana RPC URL", clusterApiUrl("devnet"))
   .parse();
 
 const opts = program.opts();
 
 async function main() {
-  const connection = new Connection(opts.rpc, "confirmed");
+  const connection = new Connection(opts.url, "confirmed");
 
   // 1. Get public key from Vault (never see the private key)
   const pubkeyBytes = await getPublicKey(KEY_NAME);
