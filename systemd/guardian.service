@@ -1,0 +1,37 @@
+# Reference template — not used in the Docker demo.
+# Shows how to inject the Vault token via systemd in production.
+
+[Unit]
+Description=Guardian Signing Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=guardian
+Group=guardian
+WorkingDirectory=/opt/guardian
+
+# Token injected as env var — not in a .env file.
+# Option A: Direct environment variable (set by provisioning tooling)
+Environment="VAULT_ADDR=https://vault.internal:8200"
+
+# Option B: Credential from systemd LoadCredential (systemd 250+)
+# LoadCredential=vault-token:/run/secrets/guardian-vault-token
+# Environment="VAULT_TOKEN=%d/vault-token"
+
+# Option C: EnvironmentFile owned by root, mode 0600
+EnvironmentFile=/etc/guardian/token.env
+
+ExecStart=/usr/bin/node /opt/guardian/dist/sign-transfer.js
+Restart=on-failure
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
