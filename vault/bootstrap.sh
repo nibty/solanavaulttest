@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 set -e
 
-export VAULT_ADDR="http://127.0.0.1:8200"
-export VAULT_TOKEN="root-token"
+export VAULT_ADDR="${VAULT_ADDR:-http://127.0.0.1:8200}"
+export VAULT_TOKEN="${VAULT_TOKEN:-root-token}"
 
 echo "Waiting for Vault..."
 until vault status > /dev/null 2>&1; do
@@ -22,18 +22,18 @@ vault write transit/keys/guardian-1/config deletion_allowed=false
 # Write signing policy
 vault policy write guardian-1-sign /vault/config/policy.hcl
 
-# Create a CIDR-bound service token
-TOKEN_OUTPUT=$(vault token create \
+# Create a service token scoped to guardian-1
+GUARDIAN_TOKEN=$(vault token create \
   -policy=guardian-1-sign \
   -ttl=24h \
   -display-name="guardian-1" \
-  -format=json)
+  -field=token)
 
-GUARDIAN_TOKEN=$(echo "$TOKEN_OUTPUT" | grep -o '"client_token":"[^"]*"' | cut -d'"' -f4)
-
-# Fetch the public key for display
-KEY_DATA=$(vault read -format=json transit/keys/guardian-1)
-PUBLIC_KEY_B64=$(echo "$KEY_DATA" | grep -o '"1":"[^"]*"' | head -1 | cut -d'"' -f4)
+# Fetch the public key for display via HTTP API (avoids jq dependency)
+PUBLIC_KEY_B64=$(wget -qO- \
+  --header="X-Vault-Token: ${VAULT_TOKEN}" \
+  "${VAULT_ADDR}/v1/transit/keys/guardian-1" \
+  | sed 's/.*"public_key":"\([^"]*\)".*/\1/')
 
 echo ""
 echo "============================================"

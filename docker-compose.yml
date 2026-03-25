@@ -11,7 +11,7 @@ services:
     volumes:
       - ./vault:/vault/config:ro
     healthcheck:
-      test: ["CMD", "vault", "status"]
+      test: ["CMD", "sh", "-c", "VAULT_ADDR=http://127.0.0.1:8200 vault status"]
       interval: 2s
       timeout: 3s
       retries: 5
