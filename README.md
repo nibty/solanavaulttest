@@ -7,8 +7,7 @@ Signs Solana transactions using OpenBao's transit secrets engine. The Ed25519 pr
 ### 1. Start OpenBao
 
 ```bash
-docker compose up -d
-docker compose logs bootstrap
+docker compose up
 ```
 
 Copy the `Service Token` from the bootstrap output.
